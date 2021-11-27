@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#07F4FB"
+    tools:context=".activities.OptionsActivity">
+
+
+    <Spinner
+        android:id="@+id/spinnerLockType"
+        android:layout_width="296dp"
+        android:layout_height="82dp"
+        android:layout_marginTop="212dp"
+        android:background="#BCFFF2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonApply"
+        android:layout_width="200dp"
+        android:layout_height="65dp"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/button_blue"
+        android:gravity="center"
+        android:onClick="btnApplyClick"
+        android:text="Apply"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/buttonPassword"
+        android:layout_width="200dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="91dp"
+        android:layout_marginBottom="68dp"
+        android:background="@drawable/button_blue"
+        android:onClick="btnPasswordClick"
+        android:text="Set Password"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonApply"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
