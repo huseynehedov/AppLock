@@ -42,12 +42,6 @@ public class OptionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
 
-        ScreenLockReceiver br = new ScreenLockReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
-        this.registerReceiver(br, filter);
-
         myPassword = SharedPrefUtil.getInstance(this).getString(USER_PASSWORD_KEY);
         buttonPassword = findViewById(R.id.btnAppList);
         buttonApply = findViewById(R.id.buttonApply);

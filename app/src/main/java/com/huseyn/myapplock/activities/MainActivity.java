@@ -16,6 +16,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,7 @@ import com.huseyn.myapplock.R;
 import com.huseyn.myapplock.lock.FingerprintActivity;
 import com.huseyn.myapplock.lock.PatternLockActivity;
 import com.huseyn.myapplock.lock.PinLockActivity;
+import com.huseyn.myapplock.receiver.ScreenLockReceiver;
 import com.huseyn.myapplock.service.LockWorker;
 import com.huseyn.myapplock.utils.SharedPrefUtil;
 import com.huseyn.myapplock.utils.Utils;
@@ -40,12 +42,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     public static int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE= 2323;
     LinearLayout layoutPermissions;
-    private Button buttonSetPassword, buttonChangePassword, buttonAppList;
+    private Button buttonSetPassword, buttonAppList;
     private static final String[] requiredPermissions = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
     };
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_CODE = 1;
+    private String optionLockCheck;
     ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -68,18 +71,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ScreenLockReceiver br = new ScreenLockReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        this.registerReceiver(br, filter);
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
                 !Settings.canDrawOverlays(this)) {
             RequestPermission();
         }
+        buttonAppList = findViewById(R.id.btnAppList);
         layoutPermissions = findViewById(R.id.layout_permissions);
         checkPermissions();
 
-        String optionLock = SharedPrefUtil.getInstance(this).getString("LockType");
-        if (optionLock != null && !optionLock.isEmpty()){
+        optionLockCheck = SharedPrefUtil.getInstance(this).getString("LockType");
+        if (optionLockCheck != null && !optionLockCheck.isEmpty()){
+            buttonAppList.setVisibility(View.VISIBLE);
             requirePassword();
         }else{
-            findViewById(R.id.btnAppList).setVisibility(View.GONE);
+            buttonAppList.setVisibility(View.GONE);
         }
     }
 

@@ -35,12 +35,8 @@ import java.util.concurrent.Executor;
 
 public class FingerprintActivity extends AppCompatActivity implements PictureCapturingListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
-    private static final int CAPTURE_IMAGE_REQUEST = 1;
     private String resultMessage = "false";
     public static final String RESULT_KEY = "ResultKey";
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    private File photoFile;
-    String currentPhotoPath;
     private static final int REQUEST_CODE = 100;
     private TextView textMsg;
     private Button buttonLogin;
@@ -66,7 +62,7 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
         uploadFrontPhoto = (ImageView) findViewById(R.id.frontIV);
         pictureService = PictureCapturingServiceImpl.getInstance(FingerprintActivity.this);
 
-        BiometricManager biometricManager = BiometricManager.from(this);
+        biometricManager = BiometricManager.from(this);
         switch (biometricManager.canAuthenticate(BIOMETRIC_STRONG |DEVICE_CREDENTIAL)) {
             case BiometricManager.BIOMETRIC_SUCCESS:
                 System.out.println("Correct input");

@@ -35,13 +35,9 @@ import java.util.TreeMap;
 
 public class PinLockActivity extends AppCompatActivity  implements PictureCapturingListener,
         ActivityCompat.OnRequestPermissionsResultCallback{
-    private static final int CAPTURE_IMAGE_REQUEST = 1;
     private PasscodeView passcodeView;
     private String resultMessage = "false";
     public static final String RESULT_KEY = "ResultKey";
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    private File photoFile;
-    String currentPhotoPath;
     private ImageView uploadBackPhoto;
     private ImageView uploadFrontPhoto;
     private APictureCapturingService pictureService;
@@ -52,8 +48,8 @@ public class PinLockActivity extends AppCompatActivity  implements PictureCaptur
         setContentView(R.layout.activity_pin_lock);
 
         passcodeView = findViewById(R.id.passcodeView);
-        uploadBackPhoto = (ImageView) findViewById(R.id.backIV);
-        uploadFrontPhoto = (ImageView) findViewById(R.id.frontIV);
+        uploadBackPhoto = findViewById(R.id.backIV);
+        uploadFrontPhoto = findViewById(R.id.frontIV);
         pictureService = PictureCapturingServiceImpl.getInstance(PinLockActivity.this);
 
         String correctPassword = SharedPrefUtil.getInstance(this).getString(USER_PASSWORD_KEY);

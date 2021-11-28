@@ -32,8 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LockWorker extends Worker {
-    private String chrome; // = "com.android.chrome"
-    private String chromeName = "Chrome";
     private String lastPackageName = "";
     private String myPackageName = "com.huseyn.myapplock";
     public static final String KEY_RECEIVER = "LockResult";
@@ -54,7 +52,7 @@ public class LockWorker extends Worker {
         System.out.println("Started Worker");
         while (true){
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -93,6 +91,7 @@ public class LockWorker extends Worker {
                     System.out.println("Open Activity");
                     Intent intent ;
                     String lockType = SharedPrefUtil.getInstance(getApplicationContext()).getString("LockType");
+                    System.out.println("LockType: " + lockType);
                     if (lockType.equals("Pin")){
                         intent  = new Intent(getApplicationContext(), PinLockActivity.class);
                     }else if (lockType.equals("Fingerprint")){
@@ -123,6 +122,7 @@ public class LockWorker extends Worker {
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
             String lockType = SharedPrefUtil.getInstance(getApplicationContext()).getString("LockType");
+            System.out.println("LockType: " + lockType);
 
             if (lockType.equals("Pin")){
 
@@ -156,15 +156,4 @@ public class LockWorker extends Worker {
 
         }
     }
-
-    @Override
-    public void onStopped() {
-        WorkRequest uploadWorkRequest =
-                new OneTimeWorkRequest.Builder(LockWorker.class).build();
-        WorkManager
-                .getInstance(getApplicationContext())
-                .enqueue(uploadWorkRequest);
-    }
-
-
 }
