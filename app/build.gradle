@@ -42,4 +42,5 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation "androidx.work:work-runtime:2.6.0"
+    implementation 'com.shuhart.stepview:stepview:1.2.8'
 }

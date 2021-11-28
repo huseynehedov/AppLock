@@ -12,11 +12,18 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 
 import androidx.annotation.NonNull;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.huseyn.myapplock.lock.FingerprintActivity;
+import com.huseyn.myapplock.lock.PatternLockActivity;
 import com.huseyn.myapplock.lock.PinLockActivity;
+import com.huseyn.myapplock.utils.SharedPrefUtil;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -25,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LockWorker extends Worker {
-    private String chrome = "com.android.chrome";
+    private String chrome; // = "com.android.chrome"
     private String chromeName = "Chrome";
     private String lastPackageName = "";
     private String myPackageName = "com.huseyn.myapplock";
@@ -79,13 +86,21 @@ public class LockWorker extends Worker {
                 e.printStackTrace();
             }
 
-            System.out.println("TopPackageName " + topPackageName);
+            List<String>  lockedAppList = SharedPrefUtil.getInstance(getApplicationContext()).getStringList();
 
             if (!topPackageName.equals(lastPackageName)){
-                if (topPackageName.equals(chrome) && !unlockedApps.containsKey(chrome)){
+                if (lockedAppList.contains(topPackageName) && !unlockedApps.containsKey(topPackageName)){
                     System.out.println("Open Activity");
-                    Intent intent = new Intent(getApplicationContext(), PinLockActivity.class);
-                    intent.putExtra("LockResult", new LockResult(chrome));
+                    Intent intent ;
+                    String lockType = SharedPrefUtil.getInstance(getApplicationContext()).getString("LockType");
+                    if (lockType.equals("Pin")){
+                        intent  = new Intent(getApplicationContext(), PinLockActivity.class);
+                    }else if (lockType.equals("Fingerprint")){
+                        intent  = new Intent(getApplicationContext(), FingerprintActivity.class);
+                    }else{
+                        intent  = new Intent(getApplicationContext(), PatternLockActivity.class);
+                    }
+                    intent.putExtra("LockResult", new LockResult(topPackageName));
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|FLAG_ACTIVITY_MULTIPLE_TASK);
                     getApplicationContext().startActivity(intent);
                 }
@@ -107,13 +122,49 @@ public class LockWorker extends Worker {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
-            if (resultCode != PinLockActivity.RESULT_OK){
-                return;
+            String lockType = SharedPrefUtil.getInstance(getApplicationContext()).getString("LockType");
+
+            if (lockType.equals("Pin")){
+
+                if (resultCode != PinLockActivity.RESULT_OK){
+                    return;
+                }
+                String message = resultData.getString(PinLockActivity.RESULT_KEY);
+                if (message.equals("true")){
+                    unlockedApps.put(packageName, true);
+                }
+
+            }else if (lockType.equals("Fingerprint")){
+
+                if (resultCode != FingerprintActivity.RESULT_OK){
+                    return;
+                }
+                String message = resultData.getString(FingerprintActivity.RESULT_KEY);
+                if (message.equals("true")){
+                    unlockedApps.put(packageName, true);
+                }
+
+            }else{
+                if (resultCode != PatternLockActivity.RESULT_OK){
+                    return;
+                }
+                String message = resultData.getString(PatternLockActivity.RESULT_KEY);
+                if (message.equals("true")){
+                    unlockedApps.put(packageName, true);
+                }
             }
-            String message = resultData.getString(PinLockActivity.RESULT_KEY);
-            if (message.equals("true")){
-                unlockedApps.put(packageName, true);
-            }
+
         }
     }
+
+    @Override
+    public void onStopped() {
+        WorkRequest uploadWorkRequest =
+                new OneTimeWorkRequest.Builder(LockWorker.class).build();
+        WorkManager
+                .getInstance(getApplicationContext())
+                .enqueue(uploadWorkRequest);
+    }
+
+
 }

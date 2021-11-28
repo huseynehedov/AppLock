@@ -20,11 +20,14 @@ import java.util.List;
 public class AppListAdapter extends RecyclerView.Adapter<AppListViewHolder> {
     private Context context;
     private List<MyItem> apps;
-    private List<String> lockedApps = new ArrayList<>();
+    private List<String> lockedApps ;
 
     public AppListAdapter(Context context, List<MyItem> apps) {
         this.context = context;
         this.apps = apps;
+
+       lockedApps = SharedPrefUtil.getInstance(context).getStringList();
+
     }
 
     @NonNull

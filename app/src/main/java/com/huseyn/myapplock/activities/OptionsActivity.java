@@ -1,25 +1,14 @@
 package com.huseyn.myapplock.activities;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,7 +25,6 @@ import com.huseyn.myapplock.lock.FingerprintActivity;
 import com.huseyn.myapplock.lock.PatternLockActivity;
 import com.huseyn.myapplock.lock.PinLockActivity;
 import com.huseyn.myapplock.receiver.ScreenLockReceiver;
-import com.huseyn.myapplock.service.LockWorker;
 import com.huseyn.myapplock.utils.SharedPrefUtil;
 
 import java.util.ArrayList;
@@ -48,17 +36,11 @@ public class OptionsActivity extends AppCompatActivity {
     private ArrayAdapter<String> optionsLockTypeAdapter;
     private String myPassword;
     public static final String USER_PASSWORD_KEY = "USER_PASSWORD_KEY";
-    public static int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE= 2323;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_options);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                !Settings.canDrawOverlays(this)) {
-            RequestPermission();
-        }
 
         ScreenLockReceiver br = new ScreenLockReceiver();
         IntentFilter filter = new IntentFilter();
@@ -66,14 +48,8 @@ public class OptionsActivity extends AppCompatActivity {
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         this.registerReceiver(br, filter);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{ Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        }
-
         myPassword = SharedPrefUtil.getInstance(this).getString(USER_PASSWORD_KEY);
-        buttonPassword = findViewById(R.id.buttonPassword);
+        buttonPassword = findViewById(R.id.btnAppList);
         buttonApply = findViewById(R.id.buttonApply);
         spinnerLockType = findViewById(R.id.spinnerLockType);
 
@@ -103,57 +79,21 @@ public class OptionsActivity extends AppCompatActivity {
         }else{
             buttonPassword.setText("Update Password");
         }
-
-        doWorker();
-    }
-
-    private void doWorker(){
-        WorkRequest uploadWorkRequest =
-                new OneTimeWorkRequest.Builder(LockWorker.class).build();
-        WorkManager
-                .getInstance(this)
-                .enqueue(uploadWorkRequest);
-    }
-
-    private void RequestPermission() {
-        // Check if Android M or higher
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Show alert dialog to the user saying a separate permission is needed
-            // Launch the settings activity if the user prefers
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + this.getPackageName()));
-            startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this, "Denied", Toast.LENGTH_SHORT).show();
-                }
-                else
-                {
-                    // Permission Granted-System will work
-                }
-
-            }
-        }
     }
 
     public void btnApplyClick(View view) {
         String optionLock = optionsLockType.get(spinnerLockType.getSelectedItemPosition());
-        if(optionLock == "Pin"){
+        if(optionLock.equals("Pin")){
             startActivity(new Intent(OptionsActivity.this, PinLockActivity.class));
+            SharedPrefUtil.getInstance(this).putString("LockType","Pin");
             finish();
         }else if(optionLock.equals("Pattern")){
             startActivity(new Intent(OptionsActivity.this, PatternLockActivity.class));
+            SharedPrefUtil.getInstance(this).putString("LockType","Pattern");
             finish();
         }else if(optionLock.equals("Fingerprint")){
             startActivity(new Intent(OptionsActivity.this, FingerprintActivity.class));
+            SharedPrefUtil.getInstance(this).putString("LockType","Fingerprint");
             finish();
         }
     }

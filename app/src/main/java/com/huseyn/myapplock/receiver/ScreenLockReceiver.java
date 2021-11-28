@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.huseyn.myapplock.lock.FingerprintActivity;
+import com.huseyn.myapplock.lock.PatternLockActivity;
 import com.huseyn.myapplock.lock.PinLockActivity;
 import com.huseyn.myapplock.service.LockWorker;
+import com.huseyn.myapplock.utils.SharedPrefUtil;
 
 public class ScreenLockReceiver extends BroadcastReceiver {
     public static final String TAG = "ScreenLockReceiver";
@@ -26,7 +29,15 @@ public class ScreenLockReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)){
             LockWorker.unlockedApps.clear();
         }else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
-            Intent intent2 = new Intent(context, PinLockActivity.class);
+            Intent intent2 ;
+            String lockType = SharedPrefUtil.getInstance(context).getString("LockType");
+            if (lockType.equals("Pin")){
+                intent2  = new Intent(context, PinLockActivity.class);
+            }else if (lockType.equals("Fingerprint")){
+                intent2  = new Intent(context, FingerprintActivity.class);
+            }else{
+                intent2  = new Intent(context, PatternLockActivity.class);
+            }
             intent2.putExtra("LockResult", new LockResult(context));
             intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|FLAG_ACTIVITY_MULTIPLE_TASK);
             context.startActivity(intent2);
@@ -44,16 +55,49 @@ public class ScreenLockReceiver extends BroadcastReceiver {
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
-            if (resultCode != PinLockActivity.RESULT_OK) {
-                return;
+            String lockType = SharedPrefUtil.getInstance(context).getString("LockType");
+
+            if (lockType.equals("Pin")) {
+
+                if (resultCode != PinLockActivity.RESULT_OK) {
+                    return;
+                }
+                String message = resultData.getString(PinLockActivity.RESULT_KEY);
+                if (!message.equals("true")) {
+                    Intent intent = new Intent(context, PinLockActivity.class);
+                    intent.putExtra("LockResult", new LockResult(context));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_MULTIPLE_TASK);
+                    context.startActivity(intent);
+                }
+
+            } else if (lockType.equals("Fingerprint")) {
+
+                if (resultCode != FingerprintActivity.RESULT_OK) {
+                    return;
+                }
+                String message = resultData.getString(FingerprintActivity.RESULT_KEY);
+                if (!message.equals("true")) {
+                    Intent intent = new Intent(context, FingerprintActivity.class);
+                    intent.putExtra("LockResult", new LockResult(context));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_MULTIPLE_TASK);
+                    context.startActivity(intent);
+                }
+
+            } else {
+
+                if (resultCode != PatternLockActivity.RESULT_OK) {
+                    return;
+                }
+                String message = resultData.getString(PatternLockActivity.RESULT_KEY);
+                if (!message.equals("true")) {
+                    Intent intent = new Intent(context, PatternLockActivity.class);
+                    intent.putExtra("LockResult", new LockResult(context));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_MULTIPLE_TASK);
+                    context.startActivity(intent);
+                }
+
             }
-            String message = resultData.getString(PinLockActivity.RESULT_KEY);
-            if (!message.equals("true")) {
-                Intent intent = new Intent(context, PinLockActivity.class);
-                intent.putExtra("LockResult", new LockResult(context));
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_MULTIPLE_TASK);
-                context.startActivity(intent);
-            }
+
         }
     }
 
