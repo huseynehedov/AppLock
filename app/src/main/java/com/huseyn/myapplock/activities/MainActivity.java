@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -84,6 +85,11 @@ public class MainActivity extends AppCompatActivity {
         buttonAppList = findViewById(R.id.btnAppList);
         layoutPermissions = findViewById(R.id.layout_permissions);
         checkPermissions();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
 
         optionLockCheck = SharedPrefUtil.getInstance(this).getString("LockType");
         if (optionLockCheck != null && !optionLockCheck.isEmpty()){
@@ -196,4 +202,22 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onResume();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        optionLockCheck = SharedPrefUtil.getInstance(this).getString("LockType");
+        if (optionLockCheck != null && !optionLockCheck.isEmpty()){
+            buttonAppList.setVisibility(View.VISIBLE);
+        }else{
+            buttonAppList.setVisibility(View.GONE);
+        }
+
+//        ScreenLockReceiver br = new ScreenLockReceiver();
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction(Intent.ACTION_SCREEN_ON);
+//        filter.addAction(Intent.ACTION_SCREEN_OFF);
+//        this.registerReceiver(br, filter);
+    }
+
 }

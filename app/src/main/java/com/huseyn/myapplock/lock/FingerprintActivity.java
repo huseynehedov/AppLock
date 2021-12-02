@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,8 +39,6 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
     private String resultMessage = "false";
     public static final String RESULT_KEY = "ResultKey";
     private static final int REQUEST_CODE = 100;
-    private TextView textMsg;
-    private Button buttonLogin;
     private BiometricManager biometricManager;
     private ImageView imageViewFingerPrint;
     private Executor executor;
@@ -48,6 +47,7 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
     private ImageView uploadBackPhoto;
     private ImageView uploadFrontPhoto;
     private APictureCapturingService pictureService;
+    Boolean b = false;
 
 
     @Override
@@ -55,8 +55,6 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fingerprint);
 
-        textMsg = findViewById(R.id.text_msg);
-        buttonLogin = findViewById(R.id.login_btn);
         imageViewFingerPrint = findViewById(R.id.imageView_fingerPrint);
         uploadBackPhoto = (ImageView) findViewById(R.id.backIV);
         uploadFrontPhoto = (ImageView) findViewById(R.id.frontIV);
@@ -65,20 +63,12 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
         biometricManager = BiometricManager.from(this);
         switch (biometricManager.canAuthenticate(BIOMETRIC_STRONG |DEVICE_CREDENTIAL)) {
             case BiometricManager.BIOMETRIC_SUCCESS:
-                System.out.println("Correct input");
-                resultMessage = "true";
-                finish();
                 Log.d("MY_APP_TAG", "App can authenticate using biometrics.");
                 break;
             case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
                 Toast.makeText(this, "Fingerprint sensor not exits", Toast.LENGTH_SHORT).show();
                 break;
             case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
-                System.out.println("Wrong input");
-                resultMessage = "false";
-
-                showToast("Starting capture!");
-                pictureService.startCapturing((PictureCapturingListener) FingerprintActivity.this);
 
                 Toast.makeText(this, "sensor not avail or busy", Toast.LENGTH_SHORT).show();
                 break;
@@ -101,19 +91,40 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
                 System.out.println("Wrong input");
                 resultMessage = "false";
 
-                showToast("Starting capture!");
                 pictureService.startCapturing((PictureCapturingListener) FingerprintActivity.this);
 
                 Toast.makeText(getApplicationContext(),
                         "Authentication error: " + errString, Toast.LENGTH_SHORT)
                         .show();
+
+                b= getIntent().getBooleanExtra("ACTION_SCREEN_ON", false);
+
+                if (b){
+                    View decorView = getWindow().getDecorView();
+                    decorView.setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_IMMERSIVE
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                }else{
+                    View decorView = getWindow().getDecorView();
+                    decorView.setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                }
             }
 
             @Override
             public void onAuthenticationSucceeded(
                     @NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                startActivity(new Intent(FingerprintActivity.this, AppListActivity.class));
+                System.out.println("Correct input");
+                resultMessage = "true";
+                finish();
+                //startActivity(new Intent(FingerprintActivity.this, AppListActivity.class));
                 Toast.makeText(getApplicationContext(),
                         "Authentication succeeded!", Toast.LENGTH_SHORT).show();
             }
@@ -121,9 +132,10 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
-                System.out.println("Correct input");
-                resultMessage = "true";
-                finish();
+                System.out.println("Wrong input");
+                resultMessage = "false";
+
+                pictureService.startCapturing((PictureCapturingListener) FingerprintActivity.this);
                 Toast.makeText(getApplicationContext(), "Authentication failed",
                         Toast.LENGTH_SHORT)
                         .show();
@@ -141,19 +153,11 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
         });
     }
 
-    private void showToast(final String text) {
-        runOnUiThread(() ->
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show()
-        );
-    }
-
     @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
-            showToast("Done capturing all photos!");
             return;
         }
-        showToast("No camera detected!");
     }
 
     @Override
@@ -169,7 +173,6 @@ public class FingerprintActivity extends AppCompatActivity implements PictureCap
                     uploadFrontPhoto.setImageBitmap(scaled);
                 }
             });
-            showToast("Picture saved to " + pictureUrl);
         }
     }
 

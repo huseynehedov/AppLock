@@ -40,6 +40,7 @@ public class PatternLockActivity extends AppCompatActivity implements PictureCap
     Password password;
     String userPassword;
     TextView stateText;
+    Boolean b = false;
 
     private String resultMessage = "false";
     public static final String RESULT_KEY = "ResultKey";
@@ -76,12 +77,26 @@ public class PatternLockActivity extends AppCompatActivity implements PictureCap
             stateText.setTextColor(Color.WHITE);
         }
         setUpPatternListener();
-    }
 
-    private void showToast(final String text) {
-        runOnUiThread(() ->
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show()
-        );
+        b= getIntent().getBooleanExtra("ACTION_SCREEN_ON", false);
+
+        if (b){
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_IMMERSIVE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }else{
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+
     }
 
     private void setUpPatternListener() {
@@ -116,7 +131,6 @@ public class PatternLockActivity extends AppCompatActivity implements PictureCap
                             password.setPASSWORD_KEY(strPassword);
                             stateText.setText(password.PATTERN_SET);
                             stepView.done(true);
-                            //doWorker();
                             goToMainActivity();
                         }else{
                             stateText.setText(password.PATTERN_SET);
@@ -136,7 +150,6 @@ public class PatternLockActivity extends AppCompatActivity implements PictureCap
                         System.out.println("Wrong input");
                         resultMessage = "false";
 
-                        showToast("Starting capture!");
                         pictureService.startCapturing((PictureCapturingListener) PatternLockActivity.this);
 
                         Toast.makeText(PatternLockActivity.this, "Password wrong", Toast.LENGTH_SHORT).show();
@@ -155,10 +168,8 @@ public class PatternLockActivity extends AppCompatActivity implements PictureCap
     @Override
     public void onDoneCapturingAllPhotos(TreeMap<String, byte[]> picturesTaken) {
         if (picturesTaken != null && !picturesTaken.isEmpty()) {
-            showToast("Done capturing all photos!");
             return;
         }
-        showToast("No camera detected!");
     }
 
     @Override
@@ -174,7 +185,6 @@ public class PatternLockActivity extends AppCompatActivity implements PictureCap
                     uploadFrontPhoto.setImageBitmap(scaled);
                 }
             });
-            showToast("Picture saved to " + pictureUrl);
         }
     }
 

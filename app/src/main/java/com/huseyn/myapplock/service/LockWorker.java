@@ -52,7 +52,7 @@ public class LockWorker extends Worker {
         System.out.println("Started Worker");
         while (true){
             try {
-                Thread.sleep(500);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -153,7 +153,15 @@ public class LockWorker extends Worker {
                     unlockedApps.put(packageName, true);
                 }
             }
-
         }
+    }
+
+    @Override
+    public void onStopped() {
+        WorkRequest uploadWorkRequest =
+                new OneTimeWorkRequest.Builder(LockWorker.class).build();
+        WorkManager
+                .getInstance(getApplicationContext())
+                .enqueue(uploadWorkRequest);
     }
 }

@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppListActivity extends AppCompatActivity {
-    private RecyclerView mainRV;
-    private FloatingActionButton fabOk;
+    private RecyclerView recyclerView;
     private PackageManager packageManager;
     private Toolbar toolbar;
 
@@ -32,21 +31,14 @@ public class AppListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_list);
 
-        fabOk = findViewById(R.id.fab_ok);
 
         initView();
         initToolbar();
 
-        fabOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO("SAVE RESULTS")
-            }
-        });
     }
 
     private void initView() {
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

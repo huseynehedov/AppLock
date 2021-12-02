@@ -12,5 +12,6 @@
     <color name="green">#08ffc8</color>
     <color name="gray">#dadada</color>
     <color name="accent">#DF0082</color>
+    <color name="light_gray">#F5F2F2</color>
 
 </resources>

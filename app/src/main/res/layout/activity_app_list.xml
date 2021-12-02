@@ -23,22 +23,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right">
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_margin="15dp"
-            android:clickable="true"
-            app:srcCompat="@drawable/done_24"
-            android:tint="@color/white"
-            android:backgroundTint="@color/accent"/>
-    </LinearLayout>
-
-
 </LinearLayout>
 

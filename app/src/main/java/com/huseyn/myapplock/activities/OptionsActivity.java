@@ -166,6 +166,7 @@ public class OptionsActivity extends AppCompatActivity {
         editText2.setHintTextColor(getResources().getColor(R.color.white));
         editText2.setTextSize(16f);
         ll.addView(editText2);
+        ll.setBackgroundColor(Color.BLACK);
 
         alert.setView(ll);
 

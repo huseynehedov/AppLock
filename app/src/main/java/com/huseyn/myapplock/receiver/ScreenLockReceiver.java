@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
+
 import com.huseyn.myapplock.lock.FingerprintActivity;
 import com.huseyn.myapplock.lock.PatternLockActivity;
 import com.huseyn.myapplock.lock.PinLockActivity;
@@ -29,6 +33,11 @@ public class ScreenLockReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)){
             LockWorker.unlockedApps.clear();
         }else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
+            WorkRequest uploadWorkRequest =
+                    new OneTimeWorkRequest.Builder(LockWorker.class).build();
+            WorkManager
+                    .getInstance(context)
+                    .enqueue(uploadWorkRequest);
             Intent intent2 ;
             String lockType = SharedPrefUtil.getInstance(context).getString("LockType");
             if (lockType.equals("Pin")){
@@ -38,6 +47,7 @@ public class ScreenLockReceiver extends BroadcastReceiver {
             }else{
                 intent2  = new Intent(context, PatternLockActivity.class);
             }
+            intent2.putExtra("ACTION_SCREEN_ON",true);
             intent2.putExtra("LockResult", new LockResult(context));
             intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|FLAG_ACTIVITY_MULTIPLE_TASK);
             context.startActivity(intent2);
@@ -97,7 +107,6 @@ public class ScreenLockReceiver extends BroadcastReceiver {
                 }
 
             }
-
         }
     }
 

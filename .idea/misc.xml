@@ -3,8 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable-v24/check_24.xml" value="0.2203125" />
+        <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable-v24/keyboard_backspace_24.xml" value="0.2203125" />
+        <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable-v24/lock_24.xml" value="0.2203125" />
         <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable/background.xml" value="0.2203125" />
         <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable/button_blue.xml" value="0.2203125" />
+        <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable/check_24.xml" value="0.2203125" />
+        <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable/custom_image_view.xml" value="0.2203125" />
+        <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable/done_24.xml" value="0.2203125" />
+        <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/drawable/lock_24.xml" value="0.2203125" />
+        <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/layout/activity_app_list.xml" value="0.20416666666666666" />
         <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/layout/activity_fingerprint.xml" value="0.20416666666666666" />
         <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/layout/activity_main.xml" value="0.20416666666666666" />
         <entry key="..\:/AndroidExamples/JavaExamples/AppLock3/app/src/main/res/layout/activity_options.xml" value="0.20416666666666666" />
